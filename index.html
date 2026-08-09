@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+<title>Parou, vei!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+<script src="https://js.pusher.com/8.4/pusher.min.js"></script>
+</head>
+<body>
+<div class="phone">
+
+  <div id="toast" class="toast hidden"></div>
+
+  <div class="dot dot-a"></div>
+  <div class="dot dot-b"></div>
+  <div class="dot dot-c"></div>
+  <div class="dot dot-d"></div>
+  <div class="dot dot-e"></div>
+  <div class="dot dot-f"></div>
+  <div class="dot dot-g"></div>
+  <div class="dot dot-h"></div>
+  <div class="dot dot-i"></div>
+  <div class="dot dot-j"></div>
+  <div class="dot dot-k"></div>
+  <div class="dot dot-l"></div>
+  <div class="dot dot-m"></div>
+  <div class="dot dot-n"></div>
+  <div class="dot dot-o"></div>
+  <div class="dot dot-p"></div>
+
+  <section id="screen-entrada" class="screen active">
+    <div class="logo-tile">
+      <div class="tile tile-back-1"></div>
+      <div class="tile tile-back-2"></div>
+      <div class="tile tile-front"><span>P</span></div>
+      <div class="dash dash1"></div>
+      <div class="dash dash2"></div>
+      <div class="dash dash3"></div>
+    </div>
+    <h1>Parou, vei!</h1>
+    <p class="subtitle">Quem for mais rápido, grita.</p>
+
+    <input id="input-nickname" type="text" placeholder="Seu apelido" maxlength="16" />
+
+    <button id="btn-criar-sala" class="btn btn-primary">Criar sala</button>
+    <button id="btn-mostrar-entrar" class="btn btn-outline">Entrar com código</button>
+
+    <div id="bloco-entrar-codigo" class="hidden">
+      <input id="input-codigo" type="text" placeholder="Código da sala" maxlength="8" style="text-transform:uppercase" />
+      <button id="btn-entrar-sala" class="btn btn-primary">Entrar na sala</button>
+    </div>
+
+    <p id="erro-entrada" class="erro hidden"></p>
+  </section>
+
+  <section id="screen-lobby" class="screen">
+    <div class="lobby-header">
+      <div>
+        <p class="label">Código</p>
+        <p class="codigo" id="lobby-codigo">------</p>
+      </div>
+      <button id="btn-abrir-config" class="btn-config hidden" title="Configurações">⚙️</button>
+    </div>
+
+    <p class="label" id="lobby-contagem">Jogadores (0/10)</p>
+    <div id="lista-jogadores" class="lista-jogadores"></div>
+
+    <button id="btn-chamada-voz" class="btn btn-outline">🎙️ Chamada de voz</button>
+
+    <p id="lobby-espera" class="hint hidden">Aguardando o host configurar e iniciar a partida...</p>
+
+    <button id="btn-iniciar" class="btn btn-primary hidden">Iniciar partida</button>
+    <button id="btn-voltar-lobby" class="btn btn-outline">Voltar</button>
+  </section>
+
+  <section id="screen-config" class="screen">
+    <p class="label" style="text-align:center">Configurações da partida</p>
+
+    <p class="label">Código da sala</p>
+    <div class="linha-codigo">
+      <input id="input-codigo-editar" type="text" maxlength="8" style="text-transform:uppercase" />
+      <button id="btn-salvar-codigo" class="btn btn-outline btn-compacto">Salvar</button>
+    </div>
+
+    <p class="label">Rodadas</p>
+    <div class="chips" id="chips-rodadas"></div>
+
+    <p class="label">Duração da votação de dúvida</p>
+    <div class="chips" id="chips-votacao"></div>
+
+    <label class="toggle-linha">
+      <span>Rodada de desempate</span>
+      <input type="checkbox" id="toggle-desempate" checked />
+    </label>
+    <label class="toggle-linha">
+      <span>Categoria baiana surpresa</span>
+      <input type="checkbox" id="toggle-bahia" />
+    </label>
+
+    <button id="btn-fechar-config" class="btn btn-primary" style="margin-top:auto">Voltar pro lobby</button>
+  </section>
+
+  <section id="screen-jogo" class="screen">
+    <div id="banner-bahia" class="banner-bahia hidden">Essa rodada tem uma categoria baiana!</div>
+    <div class="jogo-topo">
+      <span class="rodada-info" id="jogo-rodada">Rodada 1/7</span>
+      <span class="letra" id="jogo-letra">A</span>
+      <div class="timer" id="jogo-timer">60s</div>
+    </div>
+
+    <div id="campos-categorias" class="campos"></div>
+
+    <button id="btn-parei" class="btn btn-primary">Parei, vei!</button>
+
+    <div id="banner-parou" class="banner-parou hidden">
+      <div class="banner-caixa">
+        <i class="hand">✋</i>
+        <p id="banner-texto">Alguém parou!</p>
+        <p class="banner-sub">Congelando respostas...</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="screen-resultado" class="screen">
+    <p class="label" id="resultado-titulo">Resultado da rodada</p>
+    <div id="resultado-lista" class="resultado-lista"></div>
+    <button id="btn-proxima-rodada" class="btn btn-primary hidden">Próxima rodada</button>
+    <p id="resultado-espera" class="hint hidden">Aguardando o host avançar...</p>
+
+    <div id="overlay-votacao" class="banner-parou hidden">
+      <div class="votacao-caixa">
+        <p class="votacao-titulo" id="votacao-titulo">Alguém duvidou de uma resposta</p>
+        <p class="votacao-resposta" id="votacao-resposta">Jogador — resposta</p>
+        <div class="votacao-timer" id="votacao-timer">10s</div>
+        <div class="votacao-botoes">
+          <button id="btn-voto-valido" class="btn btn-outline" style="border-color:var(--teal);color:var(--teal-escuro)">Válido</button>
+          <button id="btn-voto-invalido" class="btn btn-outline" style="border-color:var(--danger);color:var(--danger-escuro)">Inválido</button>
+        </div>
+        <p class="votacao-status" id="votacao-status"></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="screen-desempate" class="screen">
+    <p class="label" style="text-align:center">Desempate!</p>
+    <p class="subtitle" id="desempate-titulo" style="text-align:center">Fulano e Ciclano empataram</p>
+    <div class="jogo-topo">
+      <span class="rodada-info" id="desempate-categoria">Categoria</span>
+      <span class="letra" id="desempate-letra">A</span>
+      <div class="timer" id="desempate-timer">20s</div>
+    </div>
+    <div id="desempate-campo" class="campos hidden">
+      <div class="campo-item">
+        <label id="desempate-categoria-label">Categoria</label>
+        <input id="desempate-input" type="text" autocomplete="off" />
+      </div>
+    </div>
+    <button id="btn-desempate-enviar" class="btn btn-primary hidden">Desempate, vei!</button>
+    <p id="desempate-espera" class="hint hidden">Aguardando os jogadores empatados responderem...</p>
+  </section>
+
+  <section id="screen-podio" class="screen">
+    <p class="label" style="text-align:center">Fim de partida</p>
+    <div id="confete" class="confete"></div>
+    <div id="podio" class="podio"></div>
+    <div id="podio-stats" class="podio-stats hidden"></div>
+    <p id="podio-stats-aviso" class="podio-stats-aviso hidden">Curiosidades da partida — o ranking do pódio acima é o que conta.</p>
+    <button id="btn-jogar-de-novo" class="btn btn-primary hidden">Jogar novamente</button>
+    <p id="podio-espera" class="hint hidden">Aguardando o host iniciar uma nova partida...</p>
+    <button id="btn-voltar-inicio" class="btn btn-outline">Voltar ao início</button>
+  </section>
+
+</div>
+<script src="app.js"></script>
+</body>
+</html>
