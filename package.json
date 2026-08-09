@@ -1,0 +1,10 @@
+{
+  "name": "parou-vei-vercel",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Parou, vei! - versao serverless (Vercel + Pusher + Upstash Redis)",
+  "dependencies": {
+    "@upstash/redis": "^1.34.3",
+    "pusher": "^5.2.0"
+  }
+}
